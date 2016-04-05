@@ -1,0 +1,138 @@
+﻿@model MvcApp.Models.StockModel
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title">Stock</h4>
+        </div>
+        <div class="modal-body">
+
+            <div class="form-group">
+                <label for="form_control_1">Product Name</label>
+                <select class="form-control dropdowns" id="drpProductName" onchange="BindProductQuantity();"></select>
+                <span id="errorProductName" class="errorMessages" style="color:red;font-weight:bold"></span>
+            </div>
+            <div class="form-group">
+                <label for="form_control_1">Product Quantity</label>
+                <input type="text" id="txtProductQuantity" class="form-control textboxes" disabled="disabled" />
+                <span id="errorProductQuantity" class="errorMessages" style="color:red;font-weight:bold"></span>
+
+            </div>
+            <div class="form-group">
+                <label for="form_control_1">Total Stock</label>
+                @Html.TextBoxFor(m => m.TotalStock, new { @id = "txtTotalStock", @class = "form-control textboxes txtNumbersOnly" })
+                <span id="errorTotalStock" class="errorMessages" style="color:red;font-weight:bold"></span>
+
+            </div>
+            <div id="message" class="message" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+                <span class="errorSaveMessages" id="errorAddStockMessage" style="font:bold"></span>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-circle green" id="btnSaveStock" onclick="SaveStock();">Submit</button>
+            <button type="button" class="btn btn-circle red" data-dismiss="modal" id="btnClose" onclick="ClearAll();">Cancel</button>
+        </div>
+    </div>
+    <!-- /.modal-content -->
+</div>
+
+
+
+
+<script type="text/javascript">
+    function SaveStock() {
+        var url = '@Url.Action("AddStock", "Stocks")';
+        var Stock = $('#txtTotalStock').val();
+        var productId = $('#drpProductName').val();
+        if (productId == "0")
+        {
+            $('#errorProductName').html('Select a product');
+            return false;
+        }
+        var stockid = sessionStorage.getItem("StockId");
+        data = JSON.stringify({ TotalStock: Stock, productid: productId, stockid: stockid });
+        Save(url, data);
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        ClearAll();
+    });
+    function DeleteStock() {
+        var Url = '@Url.Action("DeleteStock", "Stocks")';
+        var id = sessionStorage.getItem("StockId");
+        Delete(Url, id);
+    }
+</script>
+
+
+<script type="text/javascript">
+    function BindDataTable() {
+        var Url = '@Url.Action("BindStockTable", "Stocks")';
+        var table = '#StockTable';
+        var aryColTableChecked = ["", "", "Product Name", "Product Quantity", "Total Stock", "Updated Date", "Status"];
+        var col = 2;
+        GetData(Url, table, aryColTableChecked, col);
+    }
+</script>
+
+<script type="text/javascript">
+    $('#StockTable').on('click', 'a.glyphicon-pencil', function (e) {
+        var table = $('#StockTable').DataTable();
+        //var $td = $(this).closest('tr').children('td');
+        var td1 = $(this).closest('tr');
+        var rowData = table.row(td1).data();
+        var ProductName = rowData[2];
+        var StockId = rowData[0];
+        var ProductId = rowData[1];
+        var ProductQty = rowData[3];
+        var TotalStock = rowData[4];
+        $('#drpProductName').prop('disabled',true);
+        $('#drpProductName').val(ProductId).attr('selected', 'selected');
+        $('#txtProductQuantity').val(ProductQty);
+        $('#txtTotalStock').val(TotalStock);
+        sessionStorage.setItem("StockId", StockId);
+        $('#AddStocks').modal('show');
+    });
+
+    $('#StockTable').on('click', 'a.glyphicon-remove', function (e) {
+        var table = $('#StockTable').DataTable();
+        var td = $(this).closest('tr');
+        var rowData = table.row(td).data();
+        var StockId = rowData[0];
+
+        sessionStorage.setItem("StockId", StockId);
+    });
+
+</script>
+<script type="text/javascript">
+    function ClearAll() {
+        $('#drpProductName').prop('disabled', false);
+        sessionStorage.removeItem("StockId");
+        ClearErrors();
+        BindDataTable();
+        BindSelect();
+    }
+</script>
+
+<script type="text/javascript">
+    function BindSelect() {
+        var drpproductid = '#drpProductName';
+        var producturl = '@Url.Action("BindProductName", "Stocks")';
+        BindDropDowns(drpproductid, producturl);
+    }
+</script>
+
+
+<script type="text/javascript">
+    function BindProductQuantity() {
+        var producturl = '@Url.Action("GetProductQuantity", "Stocks")';
+        var id = $('#drpProductName').val();
+        var textid = '#txtProductQuantity';
+        GetValue(id, producturl,textid);
+    }
+</script>

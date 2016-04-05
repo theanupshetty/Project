@@ -1,0 +1,124 @@
+﻿@model MvcApp.Models.ProductsModel
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="ClearAll();"></button>
+            <h4 class="modal-title">Products</h4>
+        </div>
+        <div class="modal-body">
+
+            <div class="form-group">
+                <label for="form_control_1">Product Name<span class="required">*</span></label>
+                @Html.TextBoxFor(m => m.ProductName, new { @class = "form-control input-circle textboxes txtAlphabetsOnly", @id = "txtProductName", @maxlength = "15" })
+               
+                <span id="errorProductName" class="errorMessages" style="color:red;font-weight:bold"></span>
+            </div>
+            <div class="form-group">
+                <label for="form_control_1">Product Quantity<span class="required">*</span></label>
+                @Html.TextBoxFor(m => m.ProductQuantity, new { @class = "form-control input-circle textboxes", @id = "txtProductQuantity", @maxlength = "10" })                
+                <span class="help-block" style="float:right">enter qty in ml,gms,kgs.eg:115ml,100gms etc.</span>
+                <span id="errorProductQuantity" class="errorMessages" style="color:red;font-weight:bold"></span>
+
+            </div>
+            <div class="form-group">
+                <label for="form_control_1">Product MRP<span class="required">*</span></label>
+                @Html.TextBoxFor(m => m.ProductMRP, new { @class = "form-control input-circle textboxes txtNumbersOnly", @id = "txtProductMRP", @maxlength = "10" })
+                <span id="errorProductMRP" class="errorMessages" style="color:red;font-weight:bold"></span>
+            </div>
+            <div class="form-group">
+                <label for="form_control_1">Trade Price<span class="required">*</span></label>
+                @Html.TextBoxFor(m => m.TradePrice, new { @class = "form-control input-circle textboxes txtNumbersOnly", @id = "txtTradePrice", @maxlength = "10" })
+                <span id="errorTradePrice" class="errorMessages" style="color:red;font-weight:bold"></span>
+            </div>
+            <div id="message" class="message" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+                <span class="errorSaveMessages" id="errorAddProductMessage" style="font:bold"></span>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-circle green" id="btnSaveProduct" onclick="SaveProduct();">Submit</button>
+            <button type="button" class="btn btn-circle red" data-dismiss="modal" id="btnClose" onclick="ClearAll();">Cancel</button>
+        </div>
+    </div>
+    <!-- /.modal-content -->
+</div>
+
+
+
+
+<script type="text/javascript">
+    function SaveProduct() {
+        var url = '@Url.Action("AddProduct", "Products")';
+        var productname = $('#txtProductName').val();
+        var productqty = $('#txtProductQuantity').val();
+        var productmrp = $('#txtProductMRP').val();
+        var tradeprice = $('#txtTradePrice').val();
+        var id = sessionStorage.getItem("ProductId");
+        data = JSON.stringify({ productname: productname, productquantity: productqty, productmrp: productmrp,tradeprice:tradeprice, id: id });
+        Save(url, data);
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindDataTable();
+        Clear();       
+    });
+    
+</script>
+<script type="text/javascript">
+    function DeleteProduct() {
+        var Url = '@Url.Action("DeleteProduct", "Products")';
+        var id = sessionStorage.getItem("ProductId");
+        Delete(Url, id);
+    }
+</script>
+
+<script type="text/javascript">
+    function BindDataTable() {
+        var Url = '@Url.Action("BindProductsTable", "Products")';
+        var table = '#productsTable';
+        var aryColTableChecked = ["", "Product Name", "Quantity", "MRP","Trade Price", "Status"];
+        var col = 1;
+        GetData(Url, table, aryColTableChecked, col);
+    }
+</script>
+
+<script type="text/javascript">
+    $('#productsTable').on('click', 'a.glyphicon-pencil', function (e) {
+        var table = $('#productsTable').DataTable();
+        var td = $(this).closest('tr');
+        var rowData = table.row(td).data();
+        var productName = rowData[1];
+        var productId = rowData[0];
+        var productQty = rowData[2];
+        var productMrp = rowData[3];
+        var tradePrice = rowData[4];
+       
+        $('#txtProductName').val(productName);
+        $('#txtProductQuantity').val(productQty);
+        $('#txtProductMRP').val(productMrp);
+        $('#txtTradePrice').val(tradePrice);
+        sessionStorage.setItem("ProductId", productId);
+        $('#AddProducts').modal('show');
+    });
+
+    $('#productsTable').on('click', 'a.glyphicon-remove', function (e) {
+        var table = $('#productsTable').DataTable();
+        var td = $(this).closest('tr');
+        var rowData = table.row(td).data();
+        var productId = rowData[0];
+
+        sessionStorage.setItem("ProductId", productId);
+    });
+
+</script>
+<script type="text/javascript">
+    function ClearAll() {
+        sessionStorage.removeItem("ProductId");
+        ClearErrors();
+        BindDataTable();
+    }
+</script>

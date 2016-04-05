@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "Stock";
+}
+
+
+<h3 class="page-title">
+    Stock <small></small>
+</h3>
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <i class="fa fa-home"></i>
+            <a href="/Home/Index">Home</a>
+            <i class="fa fa-angle-right"></i>
+        </li>
+        <li>
+            <a href="#">Masters</a>
+            <i class="fa fa-angle-right"></i>
+        </li>
+        <li>
+            <a href="/Stocks/Index">Stock</a>
+        </li>
+    </ul>
+    <div class="page-toolbar">
+        <div class="btn-group pull-right">
+            <a href="#AddStocks" class="btn btn-mini green" data-toggle="modal" data-original-title="Click to add new product" title="">
+                Add New <i class="fa fa-plus"></i>
+            </a>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-12">
+
+        <!-- BEGIN SAMPLE TABLE PORTLET-->
+        <div class="portlet box green">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-cogs"></i>Stock Table
+                </div>
+                <div class="tools">
+                    <a href="javascript:;" class="collapse" data-original-title="" title="">
+                    </a>
+
+                    <a href="javascript:;" class="reload" data-original-title="" title="">
+                    </a>
+                    <a href="javascript:;" class="remove" data-original-title="" title="">
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body flip-scroll" style="display: block;">
+                <table class="table table-bordered table-striped table-condensed flip-content" id="StockTable">
+                    <thead class="flip-content">
+
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- END SAMPLE TABLE PORTLET-->
+
+    </div>
+</div>
+<div class="modal fade bs-modal-sm" id="small" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="ClearAll();"></button>
+                <h4 class="modal-title">Delete</h4>
+            </div>
+            <div class="modal-body">
+                Are you sure?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-circle red" id="btnClose" data-dismiss="modal" onclick="ClearAll();">No</button>
+                <button type="button" class="btn btn-circle green" id="btnYes" onclick="DeleteStock();">Yes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade in" id="AddStocks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" style="display: none; padding-right: 17px;">
+    @Html.Partial("_AddStockPartial")
+    <!-- /.modal-dialog -->
+</div>
